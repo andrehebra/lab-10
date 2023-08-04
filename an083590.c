@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 // Trie structure
 struct Trie
@@ -8,6 +9,20 @@ struct Trie
     int flag;
     struct Trie* next[26];
 };
+
+// Initializes a trie structure
+struct Trie *createTrie()
+{
+    struct Trie *pTrie = malloc(sizeof(struct Trie));
+
+    for (int i = 0; i < 26; i++) {
+        pTrie->next[i] = NULL;
+    }
+
+	pTrie->flag = 0;
+
+    return pTrie;
+}
 
 // Inserts the word to the trie structure
 void insert(struct Trie *pTrie, char *word)
@@ -19,33 +34,59 @@ void insert(struct Trie *pTrie, char *word)
 
         currentChar = *word;
 
-        printf("%d--", currentChar - 97);
+		if (pTrie->next[*word - 65] == NULL) {
+			struct Trie *newTrie = createTrie();
+			pTrie->next[*word - 65] = newTrie;
+			pTrie = pTrie->next[*word - 65];
+		} else {
+			pTrie = pTrie->next[*word - 65];
+		}
 
         word++;
     }
+
+	pTrie->flag += 1;
 }
 
 // computes the number of occurances of the word
 int numberOfOccurances(struct Trie *pTrie, char *word)
 {
+	int count = 0;
+
+	while (*word != '\0') {
+
+		if (pTrie == NULL) {
+			return 0;
+		}
+
+		pTrie = pTrie->next[*word - 65];
+
+		word++;
+	}
+	
+
+	count = pTrie->flag;
+
+	return count;
 }
 
 // deallocate the trie structure
 struct Trie *deallocateTrie(struct Trie *pTrie)
 {
+	if (pTrie == NULL) {
+		return NULL;
+	}
+
+	for (int i = 0; i < 26; i++) {
+		deallocateTrie(pTrie->next[i]);
+	}
+
+	free(pTrie);
+
+	return NULL;
 }
 
-// Initializes a trie structure
-struct Trie *createTrie()
-{
-    struct Trie *pTrie = malloc(sizeof(struct Trie));
 
-    for (int i = 0; i < 26; i++) {
-        pTrie->next[i] = NULL;
-    }
-
-    return pTrie;
-}
 
 // this function will return number of words in the dictionary,
 // and read all the words in the dictionary to the structure words
@@ -74,6 +115,8 @@ int readDictionary(char *filename, char **pInWords)
 		strcpy(tempHolder, wordHolder);
 
 		tempPtr = tempHolder;
+
+		pInWords[i] = tempPtr;
 
 		tempPtr++;
 		
