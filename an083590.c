@@ -19,8 +19,7 @@ void insert(struct Trie *pTrie, char *word)
 
         currentChar = *word;
 
-        printf("%d", currentChar);
-
+        printf("%d--", currentChar - 97);
 
         word++;
     }
@@ -42,7 +41,7 @@ struct Trie *createTrie()
     struct Trie *pTrie = malloc(sizeof(struct Trie));
 
     for (int i = 0; i < 26; i++) {
-        pTrie->next[i] == NULL;
+        pTrie->next[i] = NULL;
     }
 
     return pTrie;
@@ -52,7 +51,37 @@ struct Trie *createTrie()
 // and read all the words in the dictionary to the structure words
 int readDictionary(char *filename, char **pInWords)
 {
+
     FILE *f = fopen(filename, "r");
+
+	int numWords;
+
+	fscanf(f, "%d", &numWords);
+
+	
+	char *tempPtr = *pInWords;
+	char wordHolder[1000];
+	int wordLength;
+
+	for (int i = 0; i < numWords; i++) {
+
+		
+		fscanf(f, "%s", wordHolder);
+		wordLength = strlen(wordHolder);
+
+		char *tempHolder = malloc(sizeof(char) * wordLength + 1);
+
+		strcpy(tempHolder, wordHolder);
+
+		tempPtr = tempHolder;
+
+		tempPtr++;
+		
+	}
+	
+
+	return numWords;
+
 }
 
 int main(void)
